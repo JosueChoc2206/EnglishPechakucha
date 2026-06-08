@@ -5,27 +5,31 @@
     <title>Mazda 787B - PechaKucha</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; background: #ffffff; color: #333; font-family: 'Calibri', sans-serif; overflow: hidden; height: 100vh; }
-        
-        /* Contenedor principal de la slide */
-        .slide { width: 100vw; height: 100vh; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 50px; box-sizing: border-box; }
-        .slide.active { display: flex; }
-        h2 { color: #008000; font-size: 3em; margin-bottom: 20px; }
-        p { font-size: 1.8em; text-align: center; max-width: 800px; }
+        body { margin: 0; background: #e0e0e0; font-family: 'Segoe UI', Arial, sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
-        /* El modelo en la esquina inferior derecha */
-        #model-corner { position: absolute; bottom: 20px; right: 20px; width: 300px; height: 300px; z-index: 10; }
+        .slide { width: 80%; height: 75%; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; flex-direction: column; justify-content: center; align-items: center; padding: 40px; border-radius: 12px; position: absolute; }
+        .slide.active { display: flex; }
+
+        h2 { color: #008000; font-size: 3em; margin-bottom: 20px; border-bottom: 3px solid #ff6600; }
+        p { font-size: 1.6em; color: #333; text-align: center; }
+
+        /* Recuadro grande para el modelo */
+        #model-container { 
+            position: absolute; bottom: 40px; right: 40px; 
+            width: 550px; height: 550px; 
+            z-index: 10; background: #f9f9f9; 
+            border: 3px solid #333; border-radius: 15px; 
+        }
         model-viewer { width: 100%; height: 100%; }
 
-        .controls { position: absolute; bottom: 20px; left: 20px; z-index: 20; }
-        button { background: #333; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        .controls { position: absolute; bottom: 40px; left: 40px; z-index: 20; }
+        button { background: #008000; color: white; border: none; padding: 15px 30px; cursor: pointer; font-size: 1.2em; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- Modelo 3D en la esquina -->
-    <div id="model-corner">
-        <model-viewer src="Mazda_787B.glb" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
+    <div id="model-container">
+        <model-viewer id="mazda-viewer" src="Mazda_787B.glb" camera-controls auto-rotate shadow-intensity="1"></model-viewer>
     </div>
 
     <div id="slideshow"></div>
@@ -59,25 +63,30 @@
             "Conclusion: Thank you for listening!"
         ];
 
+        // Generar slides
         const container = document.getElementById('slideshow');
         slidesContent.forEach((text, index) => {
             container.innerHTML += `<div class="slide ${index === 0 ? 'active' : ''}"><h2>Mazda 787B</h2><p>${text}</p></div>`;
         });
 
+        // Lógica de texturas (Forzar carga desde la raíz)
+        const viewer = document.querySelector('#mazda-viewer');
+        viewer.addEventListener('load', async () => {
+            const material = viewer.model.materials[0];
+            try {
+                const texture = await viewer.createTexture('Mesh1_diff_0.png');
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+                console.log("Textura aplicada desde la raíz");
+            } catch (e) {
+                console.error("No se encontró la textura en la raíz", e);
+            }
+        });
+
+        // Navegación
         let current = 0;
         const slides = document.querySelectorAll('.slide');
-
-        function nextSlide() {
-            slides[current].classList.remove('active');
-            current = (current + 1) % slides.length;
-            slides[current].classList.add('active');
-        }
-
-        function prevSlide() {
-            slides[current].classList.remove('active');
-            current = (current - 1 + slides.length) % slides.length;
-            slides[current].classList.add('active');
-        }
+        function nextSlide() { slides[current].classList.remove('active'); current = (current + 1) % slides.length; slides[current].classList.add('active'); }
+        function prevSlide() { slides[current].classList.remove('active'); current = (current - 1 + slides.length) % slides.length; slides[current].classList.add('active'); }
     </script>
 </body>
 </html>
