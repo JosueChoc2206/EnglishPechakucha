@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mazda 787B - PechaKucha</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
+    <style>
+        body { margin: 0; background: #0a0a0a; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        
+        /* Visor 3D siempre presente de fondo */
+        #model-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        model-viewer { width: 100%; height: 100%; }
+
+        /* Contenedor de texto (el slide) */
+        .slide { position: relative; z-index: 1; text-align: center; padding: 20px; background: rgba(0,0,0,0.7); border: 1px solid #ff6600; max-width: 600px; display: none; }
+        .slide.active { display: block; }
+        
+        .controls { position: absolute; bottom: 30px; z-index: 2; }
+        button { background: #ff6600; border: none; padding: 10px 20px; color: white; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="model-container">
+        <model-viewer src="/assets/model.glb" auto-rotate camera-controls shadow-intensity="1"></model-viewer>
+    </div>
+
+    <div id="slideshow"></div>
+
+    <div class="controls">
+        <button onclick="prevSlide()">ANTERIOR</button>
+        <button onclick="nextSlide()">SIGUIENTE</button>
+    </div>
+
+    <script>
+        const slidesContent = [
+            "THE MAZDA 787B - Good morning everyone.",
+            "The Myth of Le Mans: In 1991, this car did the impossible.",
+            "What Makes it Special? The Rotary Engine.",
+            "Felix Wankel’s Idea: Triangles instead of pistons.",
+            "The Rotor: A Reuleaux triangle rotating.",
+            "The 4 Stages: Intake, Compression, Combustion, Exhaust.",
+            "Continuous Cycle: Nonstop power.",
+            "The R26B Heart: Four distinct rotors.",
+            "No Valves, Less Weight: Extremely compact.",
+            "High RPMs: Reaching 9,000 RPMs.",
+            "Linear Power Delivery: Perfectly smooth.",
+            "The Screaming Sound: Iconic high-pitched scream.",
+            "Reliability Factor: Fewer moving parts.",
+            "Fuel Consumption: Mazda fixed this with injection.",
+            "June 23, 1991: Car number 55 won.",
+            "Reliability Proof: Engine was in perfect condition.",
+            "The Ban: Rules changed for rotary engines.",
+            "Unbeatable Legend: The only rotary winner.",
+            "Engineering Courage: Being different wins.",
+            "Conclusion: Thank you for listening!"
+        ];
+
+        const container = document.getElementById('slideshow');
+        slidesContent.forEach((text, index) => {
+            container.innerHTML += `<div class="slide ${index === 0 ? 'active' : ''}"><h2>Slide ${index + 1}</h2><p>${text}</p></div>`;
+        });
+
+        let current = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function nextSlide() {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }
+
+        function prevSlide() {
+            slides[current].classList.remove('active');
+            current = (current - 1 + slides.length) % slides.length;
+            slides[current].classList.add('active');
+        }
+    </script>
+</body>
+</html>
