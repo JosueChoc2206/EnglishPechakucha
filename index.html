@@ -5,37 +5,42 @@
     <title>Mazda 787B - PechaKucha</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
     <style>
-        /* Paleta Mazda Livery */
         :root {
-            --mazda-verde: #008000;
-            --mazda-naranja: #ff6600;
-            --mazda-blanco: #ffffff;
-            --fondo: #f4f4f4;
+            --verde: #008000;
+            --naranja: #ff6600;
+            --blanco: #ffffff;
         }
 
-        body { margin: 0; background: var(--fondo); font-family: 'Arial Black', sans-serif; overflow: hidden; height: 100vh; }
+        body { 
+            margin: 0; 
+            /* Fondo con degradado para que se vean los colores de la livery */
+            background: linear-gradient(135deg, var(--verde) 30%, var(--blanco) 30%, var(--blanco) 70%, var(--naranja) 70%);
+            font-family: 'Arial', sans-serif; 
+            height: 100vh; overflow: hidden; 
+        }
         
-        /* Texto a la izquierda */
+        /* El texto ahora tiene un fondo semitransparente para que no se pierda */
         .slide { 
-            width: 40%; height: 80%; background: var(--mazda-blanco); 
-            margin: 50px 0 0 50px; border-left: 10px solid var(--mazda-verde);
-            box-shadow: 10px 10px 20px rgba(0,0,0,0.1); border-radius: 0 15px 15px 0; 
-            display: none; flex-direction: column; justify-content: center; 
-            padding: 40px; position: absolute;
+            width: 450px; height: 100%; 
+            background: rgba(255, 255, 255, 0.9); 
+            padding: 50px; position: absolute; left: 0; top: 0;
+            display: none; flex-direction: column; justify-content: center;
+            border-right: 5px solid var(--verde); z-index: 20;
         }
         .slide.active { display: flex; }
 
-        h2 { color: var(--mazda-naranja); font-size: 3.5em; margin-bottom: 20px; }
-        p { font-size: 2em; color: #333; line-height: 1.4; }
+        h2 { color: var(--naranja); font-size: 2.5em; margin-bottom: 10px; }
+        p { font-size: 1.5em; color: #333; }
 
-        /* Modelo a 720p (1280x720) y zoom más cerca */
+        /* El carro ahora está detrás del texto y con menor tamaño */
         .model-container { 
-            position: fixed; bottom: 20px; right: 20px; 
-            width: 720px; height: 405px; z-index: 10;
+            position: absolute; right: 50px; bottom: 50px;
+            width: 600px; height: 350px; 
+            z-index: 1; /* El texto siempre estará encima */
         }
 
-        .controls { position: fixed; bottom: 30px; left: 50px; z-index: 100; }
-        button { background: var(--mazda-verde); color: white; border: none; padding: 15px 30px; cursor: pointer; font-size: 1.2em; border-radius: 5px; }
+        .controls { position: fixed; bottom: 30px; left: 500px; z-index: 100; }
+        button { background: var(--verde); color: white; border: none; padding: 15px 30px; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -48,7 +53,7 @@
             auto-rotate 
             camera-controls 
             shadow-intensity="1" 
-            camera-orbit="45deg 75deg 60%" 
+            camera-orbit="30deg 75deg 70%" 
             style="width:100%; height:100%;">
         </model-viewer>
     </div>
@@ -60,40 +65,34 @@
 
     <script>
         const contenido = [
-            "Good morning everyone: THE MAZDA 787B.",
-            "In 1991, this car did the impossible: The Myth of Le Mans.",
-            "The Rotary Engine: What Makes it Special.",
-            "Triangles instead of pistons: Felix Wankel’s Idea.",
-            "A Reuleaux triangle rotating: The Rotor.",
-            "Intake, Compression, Combustion, Exhaust: The 4 Stages.",
-            "Nonstop power: Continuous Cycle.",
-            "Four distinct rotors: The R26B Heart.",
-            "Less weight, extremely compact: No Valves.",
-            "Reaching 9,000 RPMs: High RPMs.",
-            "Perfectly smooth and linear: Power Delivery.",
-            "Iconic high-pitched scream: Sound.",
-            "Fewer moving parts: Reliability Factor.",
-            "Mazda fixed the consumption: Fuel Injection.",
-            "Car number 55 won: June 23, 1991.",
-            "Perfect after the race: Engine Condition.",
-            "Rules changed for rotary engines: The Ban.",
-            "The only rotary winner: Unbeatable Legend.",
-            "Being different wins: Engineering Courage.",
-            "Thank you for listening!: Conclusion"
+            "Good morning everyone: THE MAZDA 787B",
+            "In 1991, this car did the impossible: The Myth of Le Mans",
+            "What Makes it Special: The Rotary Engine",
+            "Felix Wankel’s Idea: Triangles instead of pistons",
+            "The Rotor: A Reuleaux triangle rotating",
+            "The 4 Stages: Intake, Compression, Combustion, Exhaust",
+            "Continuous Cycle: Nonstop power",
+            "The R26B Heart: Four distinct rotors",
+            "No Valves: Less weight, extremely compact",
+            "High RPMs: Reaching 9,000 RPMs",
+            "Power Delivery: Perfectly smooth and linear",
+            "Sound: Iconic high-pitched scream",
+            "Reliability Factor: Fewer moving parts",
+            "Fuel Injection: Mazda fixed the consumption",
+            "June 23, 1991: Car number 55 won",
+            "Engine Condition: Perfect after the race",
+            "The Ban: Rules changed for rotary engines",
+            "Unbeatable Legend: The only rotary winner",
+            "Engineering Courage: Being different wins",
+            "Conclusion: Thank you for listening!"
         ];
 
         const container = document.getElementById('slides-container');
-        
         contenido.forEach((item, i) => {
             const partes = item.split(':');
-            const cuerpo = partes[0];
-            const titulo = partes[1] || ""; // Lo que está después de los 2 puntos
-            
-            container.innerHTML += `
-                <div class="slide ${i === 0 ? 'active' : ''}">
-                    <p>${cuerpo}</p>
-                    <h2>${titulo}</h2>
-                </div>`;
+            const p = partes[0];
+            const h2 = partes[1] || "";
+            container.innerHTML += `<div class="slide ${i === 0 ? 'active' : ''}"><p>${p}</p><h2>${h2}</h2></div>`;
         });
 
         let index = 0;
