@@ -1,112 +1,580 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Mazda 787B - PechaKucha</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
-    <style>
-        :root {
-            --verde: #008000;
-            --naranja: #ff6600;
-            --blanco: #ffffff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mazda 787B · #55 Charge · PechaKucha</title>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #E8530A;
+  --green:  #1A6B2A;
+  --white:  #F5F5F0;
+  --black:  #111;
+  --yellow: #FFD200;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; font-family:'Inter',sans-serif; }
 
-        body { 
-            margin: 0; 
-            background: linear-gradient(135deg, var(--verde) 30%, var(--blanco) 30%, var(--blanco) 70%, var(--naranja) 70%);
-            font-family: 'Arial', sans-serif; 
-            height: 100vh; overflow: hidden; 
-        }
-        
-        /* Panel de texto: Título arriba, texto abajo */
-        .slide { 
-            width: 400px; height: 100%; 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 40px; position: absolute; left: 0; top: 0;
-            display: none; flex-direction: column; justify-content: center;
-            border-right: 5px solid var(--verde); z-index: 20;
-            box-sizing: border-box;
-        }
-        .slide.active { display: flex; }
+/* ── BACKGROUND: geometric livery triangles ── */
+.bg {
+  position:fixed; inset:0; z-index:0;
+  background: var(--white);
+}
+/* big orange right triangle */
+.bg::before {
+  content:'';
+  position:absolute;
+  top:0; right:0; bottom:0;
+  width:62%;
+  background: var(--orange);
+  clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
+}
+/* green top-left triangle */
+.bg::after {
+  content:'';
+  position:absolute;
+  top:0; left:0;
+  width:50%; height:58%;
+  background: var(--green);
+  clip-path: polygon(35% 0, 100% 0, 55% 100%, 0 100%, 0 0);
+}
 
-        h2 { color: var(--naranja); font-size: 2.8em; margin-bottom: 20px; line-height: 1.1; }
-        p { font-size: 1.6em; color: #333; line-height: 1.5; }
+/* ── MODEL VIEWER in bottom-right ── */
+.model-wrap {
+  position:fixed;
+  right: -2%;
+  bottom: -2%;
+  width: 60%;
+  height: 68%;
+  z-index: 5;
+  pointer-events:auto;
+}
+model-viewer {
+  width:100%; height:100%;
+  --poster-color: transparent;
+  background: transparent;
+}
 
-        /* Contenedor del carro: siempre visible a la derecha */
-        .model-container { 
-            position: absolute; right: 20px; bottom: 20px;
-            width: 700px; height: 450px; 
-            z-index: 5; 
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 15px;
-        }
+/* ── LEFT TEXT PANEL ── */
+.panel {
+  position:fixed;
+  left:0; top:0; bottom:0;
+  width:320px;
+  z-index:20;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding: 60px 36px 120px 44px;
+}
 
-        .controls { position: fixed; bottom: 30px; left: 450px; z-index: 100; }
-        button { background: var(--verde); color: white; border: none; padding: 15px 30px; cursor: pointer; font-size: 1.2em; border-radius: 5px; }
-    </style>
+.slide-label {
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color: var(--green);
+  margin-bottom:14px;
+  opacity:0;
+  transform:translateX(-12px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.slide-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: clamp(52px,5.5vw,80px);
+  line-height:0.92;
+  color: var(--orange);
+  margin-bottom:22px;
+  opacity:0;
+  transform:translateX(-16px);
+  transition: opacity .4s ease .06s, transform .4s ease .06s;
+}
+.slide-body {
+  font-size:15.5px;
+  line-height:1.68;
+  color:#2a2a2a;
+  max-width:260px;
+  opacity:0;
+  transform:translateX(-12px);
+  transition: opacity .4s ease .12s, transform .4s ease .12s;
+}
+.panel.in .slide-label,
+.panel.in .slide-title,
+.panel.in .slide-body { opacity:1; transform:translateX(0); }
+
+/* stat chips below body */
+.chip-row {
+  display:flex; gap:10px; flex-wrap:wrap;
+  margin-top:22px;
+  opacity:0; transform:translateX(-10px);
+  transition: opacity .4s ease .18s, transform .4s ease .18s;
+}
+.panel.in .chip-row { opacity:1; transform:translateX(0); }
+.chip {
+  background:rgba(255,255,255,0.75);
+  border:1.5px solid rgba(0,0,0,0.10);
+  border-radius:8px;
+  padding:9px 14px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.chip-val {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:26px; line-height:1;
+  color: var(--orange);
+}
+.chip-val.g { color: var(--green); }
+.chip-val.y { color: #9a7e00; }
+.chip-lbl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#888; font-weight:700; }
+
+/* ── ROTOR ANIMATION OVERLAY ── */
+.rotor-wrap {
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  z-index:30;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .5s ease;
+}
+.rotor-wrap.visible { opacity:1; pointer-events:auto; }
+.rotor-close {
+  position:absolute; top:-36px; right:-4px;
+  font-size:12px; letter-spacing:2px; text-transform:uppercase;
+  color:#fff; background:rgba(0,0,0,0.6);
+  border:1px solid rgba(255,255,255,0.2);
+  padding:4px 12px; border-radius:4px;
+  cursor:pointer; font-family:'Inter',sans-serif; font-weight:700;
+}
+.rotor-svg {
+  filter: drop-shadow(0 0 24px rgba(232,83,10,0.6));
+}
+/* spinning rotor group */
+#rotor-group {
+  transform-origin: 200px 200px;
+  animation: spin 1.4s linear infinite;
+}
+#rotor-group2 {
+  transform-origin: 200px 200px;
+  animation: spin 1.4s linear infinite reverse;
+  animation-delay: -0.3s;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── AUDIO PLAYER TAB ── */
+.audio-tab {
+  position:fixed;
+  bottom:80px; right:0;
+  z-index:50;
+  background: var(--green);
+  color:#fff;
+  padding:12px 16px 12px 18px;
+  border-radius:12px 0 0 12px;
+  cursor:pointer;
+  display:flex; align-items:center; gap:10px;
+  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  box-shadow: -3px 3px 18px rgba(0,0,0,0.3);
+  transition: transform .25s ease;
+  user-select:none;
+}
+.audio-tab:hover { transform: translateX(-4px); }
+.audio-tab svg { flex-shrink:0; }
+
+.audio-panel {
+  position:fixed;
+  bottom:80px; right:0;
+  z-index:50;
+  background:#111;
+  color:#fff;
+  width:260px;
+  border-radius:14px 0 0 14px;
+  padding:18px 20px;
+  box-shadow:-4px 4px 24px rgba(0,0,0,0.45);
+  display:none;
+  flex-direction:column;
+  gap:12px;
+}
+.audio-panel.open { display:flex; }
+.ap-header {
+  display:flex; justify-content:space-between; align-items:center;
+}
+.ap-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px; color:var(--orange); letter-spacing:1px;
+}
+.ap-close {
+  font-size:10px; color:#888; cursor:pointer; letter-spacing:2px;
+  text-transform:uppercase; font-weight:700; background:none; border:none;
+  color:#888; font-family:'Inter',sans-serif;
+}
+.ap-close:hover { color:#fff; }
+.ap-file-label {
+  font-size:10px; color:#666; letter-spacing:2px; text-transform:uppercase; font-weight:600;
+}
+.ap-controls {
+  display:flex; align-items:center; gap:10px;
+}
+.ap-play {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--orange); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition: background .2s;
+}
+.ap-play:hover { background:#c94400; }
+.ap-progress-wrap {
+  flex:1; height:4px; background:#2a2a2a; border-radius:2px; cursor:pointer;
+  position:relative;
+}
+.ap-progress-fill {
+  height:100%; background:var(--orange); border-radius:2px; width:0%; transition:width .1s linear;
+}
+.ap-time { font-size:10px; color:#666; letter-spacing:1px; font-weight:600; white-space:nowrap; }
+.ap-volume { display:flex; align-items:center; gap:8px; }
+.ap-vol-icon { color:#555; font-size:14px; }
+input[type=range].vol-slider {
+  flex:1; height:3px; accent-color:var(--green);
+  cursor:pointer;
+}
+.ap-note {
+  font-size:10px; color:#444; line-height:1.5;
+  letter-spacing:.3px;
+}
+
+/* ── BOTTOM NAV ── */
+.nav-bar {
+  position:fixed; bottom:0; left:0; right:0;
+  height:64px; z-index:40;
+  display:flex; align-items:center;
+  padding:0 44px;
+  gap:16px;
+}
+.nav-logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px; letter-spacing:2px;
+  color: var(--orange);
+}
+.nav-progress-wrap {
+  width:140px; height:2px;
+  background:rgba(0,0,0,0.15); border-radius:1px; overflow:hidden;
+}
+.nav-progress-fill {
+  height:100%; background:var(--orange); border-radius:1px;
+  transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+.nav-num {
+  font-size:10px; font-weight:700; letter-spacing:2px; color:#aaa;
+  text-transform:uppercase;
+}
+.nav-right { margin-left:auto; display:flex; gap:10px; }
+.btn {
+  padding:10px 26px;
+  border-radius:6px;
+  font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; font-family:'Inter',sans-serif;
+  transition: all .2s;
+}
+.btn-prev {
+  background:transparent;
+  border:1.5px solid rgba(0,0,0,0.18);
+  color:#555;
+}
+.btn-prev:hover { background:rgba(0,0,0,0.06); color:#111; }
+.btn-next {
+  background:var(--green);
+  border:1.5px solid var(--green);
+  color:#fff;
+}
+.btn-next:hover { background:#14551f; }
+
+/* ── ROTOR TRIGGER BUTTON (shows on specific slides) ── */
+.rotor-trigger {
+  display:none;
+  margin-top:18px;
+  align-self:flex-start;
+  background:var(--orange);
+  border:none; border-radius:6px;
+  color:#fff; font-family:'Inter',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase;
+  padding:10px 20px; cursor:pointer;
+  opacity:0; transition:opacity .4s ease .24s;
+}
+.panel.in .rotor-trigger { opacity:1; }
+
+/* livery accent line */
+.livery-line {
+  width:100px; height:4px; border-radius:2px;
+  background: linear-gradient(90deg, var(--orange) 33%, var(--yellow) 33%, var(--yellow) 66%, var(--green) 66%);
+  margin-bottom:18px;
+  opacity:0; transition:opacity .35s ease .02s;
+}
+.panel.in .livery-line { opacity:1; }
+</style>
 </head>
 <body>
 
-    <div id="slides-container"></div>
+<!-- Geometric livery background -->
+<div class="bg"></div>
 
-    <div class="model-container">
-        <model-viewer 
-            src="Mazda_787B.glb" 
-            auto-rotate 
-            camera-controls 
-            shadow-intensity="1" 
-            camera-orbit="30deg 75deg 70%" 
-            style="width:100%; height:100%;">
-        </model-viewer>
+<!-- 3D Model -->
+<div class="model-wrap">
+  <model-viewer
+    src="Mazda_787B.glb"
+    auto-rotate
+    auto-rotate-delay="500"
+    rotation-per-second="12deg"
+    camera-controls
+    disable-zoom
+    shadow-intensity="0.5"
+    exposure="1.1"
+    camera-orbit="-20deg 85deg 110%"
+    interaction-prompt="none"
+    style="width:100%;height:100%;background:transparent;">
+  </model-viewer>
+</div>
+
+<!-- Left text panel -->
+<div class="panel" id="panel">
+  <div class="livery-line"></div>
+  <div class="slide-label" id="lbl">PechaKucha · Mazda 787B</div>
+  <h1 class="slide-title" id="ttl">Good<br>Morning</h1>
+  <p class="slide-body" id="bdy">Welcome to this PechaKucha on one of the most legendary machines in motorsport history.</p>
+  <div class="chip-row" id="chips"></div>
+  <button class="rotor-trigger" id="rotor-btn" onclick="showRotor()">▶ Ver el Rotor</button>
+</div>
+
+<!-- Bottom nav -->
+<div class="nav-bar">
+  <span class="nav-logo">#55 · Charge</span>
+  <div class="nav-progress-wrap">
+    <div class="nav-progress-fill" id="npf" style="width:5%"></div>
+  </div>
+  <span class="nav-num" id="nnum">01 / 20</span>
+  <div class="nav-right">
+    <button class="btn btn-prev" onclick="go(-1)">← Anterior</button>
+    <button class="btn btn-next" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- Rotor animation overlay -->
+<div class="rotor-wrap" id="rotor-wrap">
+  <button class="rotor-close" onclick="hideRotor()">✕ Cerrar</button>
+  <svg class="rotor-svg" width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <!-- housing (epitrochoid approximation) -->
+    <ellipse cx="200" cy="200" rx="170" ry="130" fill="none" stroke="#1a1a1a" stroke-width="3" opacity="0.15"/>
+    <path d="M200,30 C310,30 370,100 370,200 C370,300 310,370 200,370 C90,370 30,300 30,200 C30,100 90,30 200,30Z"
+          fill="rgba(26,107,42,0.08)" stroke="#1A6B2A" stroke-width="2.5"/>
+    <!-- outer ring glow -->
+    <circle cx="200" cy="200" r="175" fill="none" stroke="rgba(232,83,10,0.15)" stroke-width="1"/>
+
+    <!-- rotor 1 (main visible rotor) -->
+    <g id="rotor-group">
+      <!-- Reuleaux triangle rotor -->
+      <path d="M200,80 A145,145 0 0,1 325,170 A145,145 0 0,1 200,320 A145,145 0 0,1 75,170 A145,145 0 0,1 200,80Z"
+            fill="rgba(232,83,10,0.18)" stroke="#E8530A" stroke-width="3" stroke-linejoin="round"/>
+      <!-- rotor face detail -->
+      <circle cx="200" cy="195" r="18" fill="none" stroke="#E8530A" stroke-width="2" opacity="0.5"/>
+      <!-- apex seals -->
+      <circle cx="200" cy="88" r="6" fill="#E8530A"/>
+      <circle cx="318" cy="173" r="6" fill="#E8530A"/>
+      <circle cx="82" cy="173" r="6" fill="#E8530A"/>
+      <!-- rotor lines -->
+      <line x1="200" y1="88" x2="200" y2="195" stroke="#E8530A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="318" y1="173" x2="200" y2="195" stroke="#E8530A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="82" y1="173" x2="200" y2="195" stroke="#E8530A" stroke-width="1.5" opacity="0.4"/>
+    </g>
+
+    <!-- eccentric shaft -->
+    <g id="rotor-group2">
+      <circle cx="200" cy="200" r="22" fill="none" stroke="#FFD200" stroke-width="2.5" stroke-dasharray="6 3"/>
+      <circle cx="218" cy="200" r="8" fill="#FFD200" opacity="0.9"/>
+    </g>
+
+    <!-- center fixed gear -->
+    <circle cx="200" cy="200" r="10" fill="#1A6B2A"/>
+    <circle cx="200" cy="200" r="4" fill="#fff"/>
+
+    <!-- combustion glow (top chamber) -->
+    <ellipse cx="200" cy="110" rx="30" ry="16" fill="#E8530A" opacity="0.25">
+      <animate attributeName="opacity" values="0.1;0.4;0.1" dur="0.7s" repeatCount="indefinite"/>
+    </ellipse>
+    <!-- combustion glow (right chamber) -->
+    <ellipse cx="300" cy="240" rx="24" ry="18" fill="#FFD200" opacity="0.2">
+      <animate attributeName="opacity" values="0.05;0.3;0.05" dur="0.7s" begin="0.23s" repeatCount="indefinite"/>
+    </ellipse>
+    <!-- combustion glow (left chamber) -->
+    <ellipse cx="100" cy="240" rx="24" ry="18" fill="#1A6B2A" opacity="0.2">
+      <animate attributeName="opacity" values="0.05;0.25;0.05" dur="0.7s" begin="0.46s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- Labels -->
+    <text x="200" y="24" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="14" fill="#E8530A" letter-spacing="3">INTAKE</text>
+    <text x="376" y="205" text-anchor="start" font-family="Bebas Neue,sans-serif" font-size="12" fill="#E8530A" letter-spacing="2">COMB.</text>
+    <text x="24" y="205" text-anchor="end" font-family="Bebas Neue,sans-serif" font-size="12" fill="#1A6B2A" letter-spacing="2">EXH.</text>
+    <text x="200" y="396" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="13" fill="#888" letter-spacing="3">R26B · WANKEL ROTARY</text>
+  </svg>
+</div>
+
+<!-- Audio panel tab -->
+<div class="audio-tab" id="audio-tab" onclick="toggleAudio()">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+  </svg>
+  ENGINE
+</div>
+
+<div class="audio-panel" id="audio-panel">
+  <div class="ap-header">
+    <span class="ap-title">R26B Sound</span>
+    <button class="ap-close" onclick="toggleAudio()">✕ Cerrar</button>
+  </div>
+  <div class="ap-file-label">engine.mp3</div>
+  <div class="ap-controls">
+    <button class="ap-play" id="play-btn" onclick="togglePlay()" aria-label="Play/Pause">
+      <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="white">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+    </button>
+    <div class="ap-progress-wrap" id="ap-prog-wrap" onclick="seekAudio(event)">
+      <div class="ap-progress-fill" id="ap-prog"></div>
     </div>
+    <span class="ap-time" id="ap-time">0:00</span>
+  </div>
+  <div class="ap-volume">
+    <svg class="ap-vol-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+    </svg>
+    <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.8" oninput="setVolume(this.value)">
+  </div>
+  <div class="ap-note">Coloca engine.mp3 en la misma carpeta que este archivo.</div>
+</div>
 
-    <div class="controls">
-        <button onclick="prevSlide()">ANTERIOR</button>
-        <button onclick="nextSlide()">SIGUIENTE</button>
-    </div>
+<audio id="engine-audio" src="engine.mp3" loop></audio>
 
-    <script>
-        const contenido = [
-            "Good morning everyone: .",
-            "The fear of Le Mans: In 1991, this car did the impossible, it won the 24h of le mans, the most exigent race in the world.",
-            "The Rotary engine: Makes the Mazda 787B so special.",
-            "The Felix Wankel's Idea: the rotary engine, the soul of the car.",
-            "The Rotor: A Reuleaux triangle rotating very fast.",
-            "The 4 stages: Intake, Compression, Combustion, Exhaust.",
-            "Continuous Cycle: Nonstop power in every lap, every corner.",
-            "The R26B Heart: Four distinct rotors working simultaneously.",
-            "No Valves: Less weight, extremely compact, leading the race.",
-            "High RPMs: Reaching 9,000 RPMs, equivalent to 110 dB.",
-            "Power Delivery: Perfectly smooth and linear.",
-            "Sound: Iconic high-pitched scream,.",
-            "Reliability Factor: Fewer moving parts, less mantenience.",
-            "Fuel Injection: Mazda fixed the consumption.",
-            "June 23, 1991: the Car number 55 won, with the charge livery, giving us the perfect example of japanese engineering.",
-            "Engine Condition: Perfect after the race.",
-            "The Ban: Rules changed for rotary engines, and the mazda 787B got banned.",
-            "Unbeatable Legend: The only Japanese car with rotary engine to win the race.",
-            "Impact : the mazda 787B broke the european monopoly",
-            "Conclusion: Thank you for listening!"
-        ];
+<script>
+const slides = [
+  { lbl:"PechaKucha · Intro", ttl:"Good\nMorning", bdy:"Welcome to this PechaKucha on one of the most legendary machines in motorsport history.", chips:[], rotor:false },
+  { lbl:"Le Mans · 1991", ttl:"The Fear\nof Le Mans", bdy:"In 1991, this car did the impossible — it won the 24 Hours of Le Mans, the most demanding endurance race in the world.", chips:[{v:"24",l:"Hours",c:""},{v:"1991",l:"Victorioso",c:"g"}], rotor:false },
+  { lbl:"Ingeniería · Rotary", ttl:"The Rotary\nEngine", bdy:"What makes the Mazda 787B so special lives under its bodywork — the legendary rotary engine that no one else dared to race.", chips:[], rotor:true },
+  { lbl:"Historia · 1957", ttl:"Felix\nWankel", bdy:"The rotary engine — the soul of the car. Invented by Felix Wankel and licensed by Mazda, who spent decades perfecting what others abandoned.", chips:[], rotor:true },
+  { lbl:"Mecánica · Rotor", ttl:"The\nRotor", bdy:"A Reuleaux triangle spinning at extreme speed inside an epitrochoidal housing. Three combustion chambers active at all times.", chips:[], rotor:true },
+  { lbl:"Ciclo · 4 Etapas", ttl:"The Four\nStages", bdy:"Intake, Compression, Combustion, Exhaust — all happening simultaneously across three chambers with every single rotation.", chips:[], rotor:false },
+  { lbl:"Potencia · Continua", ttl:"Continuous\nCycle", bdy:"Nonstop power in every lap, every corner. Three chambers fire in rapid sequence delivering perfectly uninterrupted power.", chips:[{v:"3",l:"Cámaras activas",c:""},{v:"0",l:"Interrupciones",c:"g"}], rotor:false },
+  { lbl:"Motor · R26B", ttl:"The R26B\nHeart", bdy:"Four distinct rotors working simultaneously. 2.6 liters of pure rotary engineering producing approximately 700 horsepower.", chips:[{v:"4",l:"Rotores",c:""},{v:"700",l:"Caballos",c:""},{v:"2.6L",l:"Cilindrada",c:"y"}], rotor:true },
+  { lbl:"Diseño · Sin Válvulas", ttl:"No\nValves", bdy:"Less weight, extremely compact. No poppet valves, no valve springs — the rotor itself opens and closes the ports.", chips:[{v:"60%",l:"Menos piezas",c:"g"}], rotor:false },
+  { lbl:"Performance · RPM", ttl:"High\nRPMs", bdy:"Reaching 9,000 RPM in race conditions — a point where most piston engines would self-destruct. Equivalent to 110 decibels.", chips:[{v:"9,000",l:"RPM máx",c:""},{v:"110",l:"Decibeles",c:"y"}], rotor:false },
+  { lbl:"Performance · Entrega", ttl:"Power\nDelivery", bdy:"Perfectly smooth and linear power curve — no torque dips, no hesitation, no drama through every corner.", chips:[], rotor:false },
+  { lbl:"Identidad · Sonido", ttl:"The\nSound", bdy:"An iconic high-pitched scream unlike any other race car. Once heard, it is never forgotten — the rotary's signature to the world.", chips:[], rotor:false },
+  { lbl:"Confiabilidad", ttl:"Reliability\nFactor", bdy:"Fewer moving parts means less to fail. The R26B ran 24 straight hours at maximum load without a single mechanical issue.", chips:[{v:"0",l:"Fallas de motor",c:"g"},{v:"24h",l:"A carga máxima",c:""}], rotor:false },
+  { lbl:"Ingeniería · Combustible", ttl:"Fuel\nInjection", bdy:"Mazda fixed the rotary's notorious fuel thirst. Re-engineered injection mapping made the 787B fully competitive over race distance.", chips:[], rotor:false },
+  { lbl:"Historia · 23 Jun 1991", ttl:"June 23,\n1991", bdy:"Car #55 crosses the finish line at Circuit de la Sarthe with the Charge livery. The perfect example of Japanese engineering at its peak.", chips:[{v:"#55",l:"Número de carro",c:""},{v:"1st",l:"Japonés ganador",c:"y"}], rotor:false },
+  { lbl:"Post-Carrera", ttl:"Engine\nCondition", bdy:"After 24 hours at maximum load, the R26B was inspected and found in perfect condition — zero degradation beyond expectations.", chips:[{v:"✓",l:"Perfecto",c:"g"}], rotor:false },
+  { lbl:"Regulaciones · 1992", ttl:"The\nBan", bdy:"The ACO changed the equivalency formula for rotary engines after 1991, making them uncompetitive. The 787B never returned as a works entry.", chips:[{v:"1",l:"Temporada elegible",c:"y"}], rotor:false },
+  { lbl:"Legado · Invicto", ttl:"Unbeatable\nLegend", bdy:"The only Japanese car with a rotary engine ever to win Le Mans outright. A record that stands to this day and likely always will.", chips:[], rotor:false },
+  { lbl:"Impacto · Historia", ttl:"Breaking\nMonopoly", bdy:"The Mazda 787B shattered the European monopoly at the world's greatest endurance race — proving Japan's place at the very top.", chips:[{v:"1st",l:"Ganador no-europeo",c:""}], rotor:false },
+  { lbl:"PechaKucha · Fin", ttl:"Thank\nYou", bdy:"The 787B proved that passion, engineering, and a spinning triangle can change history. Car #55 · Le Mans 1991 · forever.", chips:[], rotor:false },
+];
 
-        const container = document.getElementById('slides-container');
-        contenido.forEach((item, i) => {
-            const partes = item.split(':');
-            const titulo = partes[0]; // Ahora el título es lo primero
-            const texto = partes[1] || "";
-            
-            container.innerHTML += `
-                <div class="slide ${i === 0 ? 'active' : ''}">
-                    <h2>${titulo}</h2>
-                    <p>${texto}</p>
-                </div>`;
-        });
+let cur = 0, busy = false;
+const panel = document.getElementById('panel');
 
-        let index = 0;
-        const slides = document.querySelectorAll('.slide');
-        function update() { slides.forEach((s, i) => s.classList.toggle('active', i === index)); }
-        function nextSlide() { index = (index + 1) % slides.length; update(); }
-        function prevSlide() { index = (index - 1 + slides.length) % slides.length; update(); }
-    </script>
+function render() {
+  const s = slides[cur];
+  document.getElementById('lbl').textContent = s.lbl;
+  document.getElementById('ttl').innerHTML = s.ttl.replace('\n','<br>');
+  document.getElementById('bdy').textContent = s.bdy;
+
+  const cr = document.getElementById('chips');
+  cr.innerHTML = '';
+  (s.chips||[]).forEach(c => {
+    cr.innerHTML += `<div class="chip"><div class="chip-val ${c.c}">${c.v}</div><div class="chip-lbl">${c.l}</div></div>`;
+  });
+
+  const rb = document.getElementById('rotor-btn');
+  rb.style.display = s.rotor ? 'block' : 'none';
+
+  const total = slides.length;
+  document.getElementById('npf').style.width = Math.round(((cur+1)/total)*100)+'%';
+  document.getElementById('nnum').textContent = String(cur+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+}
+
+function go(dir) {
+  if (busy) return;
+  busy = true;
+  panel.classList.remove('in');
+  setTimeout(() => {
+    cur = (cur + dir + slides.length) % slides.length;
+    render();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ panel.classList.add('in'); busy=false; }));
+  }, 220);
+}
+
+// rotor overlay
+function showRotor() { document.getElementById('rotor-wrap').classList.add('visible'); }
+function hideRotor() { document.getElementById('rotor-wrap').classList.remove('visible'); }
+
+// audio
+let audioOpen = false;
+function toggleAudio() {
+  audioOpen = !audioOpen;
+  document.getElementById('audio-panel').classList.toggle('open', audioOpen);
+  document.getElementById('audio-tab').style.display = audioOpen ? 'none' : 'flex';
+}
+
+const audio = document.getElementById('engine-audio');
+let playing = false;
+
+function togglePlay() {
+  if (playing) {
+    audio.pause(); playing = false;
+    document.getElementById('play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  } else {
+    audio.play().catch(()=>{});
+    playing = true;
+    document.getElementById('play-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+  }
+}
+
+function setVolume(v) { audio.volume = parseFloat(v); }
+
+function seekAudio(e) {
+  if (!audio.duration) return;
+  const r = document.getElementById('ap-prog-wrap').getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  audio.currentTime = pct * audio.duration;
+}
+
+function fmtTime(s) {
+  const m = Math.floor(s/60);
+  return m+':'+(Math.floor(s%60)+'').padStart(2,'0');
+}
+
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = audio.currentTime / audio.duration * 100;
+  document.getElementById('ap-prog').style.width = pct+'%';
+  document.getElementById('ap-time').textContent = fmtTime(audio.currentTime);
+});
+audio.addEventListener('ended', () => {
+  playing = false;
+  document.getElementById('play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+});
+
+// keyboard
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  if (e.key === 'Escape') hideRotor();
+});
+
+// init
+audio.volume = 0.8;
+render();
+requestAnimationFrame(()=>requestAnimationFrame(()=>panel.classList.add('in')));
+</script>
 </body>
 </html>
