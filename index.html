@@ -163,84 +163,26 @@ model-viewer {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── AUDIO PLAYER TAB ── */
-.audio-tab {
+/* ── ENGINE SOUND BUTTON ── */
+.engine-btn {
   position:fixed;
   bottom:80px; right:0;
   z-index:50;
   background: var(--green);
+  border: none;
+  border-radius:10px 0 0 10px;
   color:#fff;
-  padding:12px 16px 12px 18px;
-  border-radius:12px 0 0 12px;
+  padding:12px 18px 12px 16px;
+  display:flex; align-items:center; gap:9px;
+  font-family:'Inter',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase;
   cursor:pointer;
-  display:flex; align-items:center; gap:10px;
-  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
-  box-shadow: -3px 3px 18px rgba(0,0,0,0.3);
-  transition: transform .25s ease;
-  user-select:none;
+  box-shadow:-3px 3px 16px rgba(0,0,0,0.25);
+  transition: transform .2s ease, background .2s;
 }
-.audio-tab:hover { transform: translateX(-4px); }
-.audio-tab svg { flex-shrink:0; }
-
-.audio-panel {
-  position:fixed;
-  bottom:80px; right:0;
-  z-index:50;
-  background:#111;
-  color:#fff;
-  width:260px;
-  border-radius:14px 0 0 14px;
-  padding:18px 20px;
-  box-shadow:-4px 4px 24px rgba(0,0,0,0.45);
-  display:none;
-  flex-direction:column;
-  gap:12px;
-}
-.audio-panel.open { display:flex; }
-.ap-header {
-  display:flex; justify-content:space-between; align-items:center;
-}
-.ap-title {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:20px; color:var(--orange); letter-spacing:1px;
-}
-.ap-close {
-  font-size:10px; color:#888; cursor:pointer; letter-spacing:2px;
-  text-transform:uppercase; font-weight:700; background:none; border:none;
-  color:#888; font-family:'Inter',sans-serif;
-}
-.ap-close:hover { color:#fff; }
-.ap-file-label {
-  font-size:10px; color:#666; letter-spacing:2px; text-transform:uppercase; font-weight:600;
-}
-.ap-controls {
-  display:flex; align-items:center; gap:10px;
-}
-.ap-play {
-  width:40px; height:40px; border-radius:50%;
-  background:var(--orange); border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  flex-shrink:0; transition: background .2s;
-}
-.ap-play:hover { background:#c94400; }
-.ap-progress-wrap {
-  flex:1; height:4px; background:#2a2a2a; border-radius:2px; cursor:pointer;
-  position:relative;
-}
-.ap-progress-fill {
-  height:100%; background:var(--orange); border-radius:2px; width:0%; transition:width .1s linear;
-}
-.ap-time { font-size:10px; color:#666; letter-spacing:1px; font-weight:600; white-space:nowrap; }
-.ap-volume { display:flex; align-items:center; gap:8px; }
-.ap-vol-icon { color:#555; font-size:14px; }
-input[type=range].vol-slider {
-  flex:1; height:3px; accent-color:var(--green);
-  cursor:pointer;
-}
-.ap-note {
-  font-size:10px; color:#444; line-height:1.5;
-  letter-spacing:.3px;
-}
+.engine-btn:hover { transform:translateX(-4px); }
+.engine-btn.playing { background: var(--orange); }
 
 /* ── BOTTOM NAV ── */
 .nav-bar {
@@ -341,7 +283,7 @@ input[type=range].vol-slider {
   <h1 class="slide-title" id="ttl">Good<br>Morning</h1>
   <p class="slide-body" id="bdy">Welcome to this PechaKucha on one of the most legendary machines in motorsport history.</p>
   <div class="chip-row" id="chips"></div>
-  <button class="rotor-trigger" id="rotor-btn" onclick="showRotor()">▶ Ver el Rotor</button>
+  <button class="rotor-trigger" id="rotor-btn" onclick="showRotor()">▶ View Rotor</button>
 </div>
 
 <!-- Bottom nav -->
@@ -352,14 +294,14 @@ input[type=range].vol-slider {
   </div>
   <span class="nav-num" id="nnum">01 / 20</span>
   <div class="nav-right">
-    <button class="btn btn-prev" onclick="go(-1)">← Anterior</button>
-    <button class="btn btn-next" onclick="go(1)">Siguiente →</button>
+    <button class="btn btn-prev" onclick="go(-1)">← Previous</button>
+    <button class="btn btn-next" onclick="go(1)">Next →</button>
   </div>
 </div>
 
 <!-- Rotor animation overlay -->
 <div class="rotor-wrap" id="rotor-wrap">
-  <button class="rotor-close" onclick="hideRotor()">✕ Cerrar</button>
+  <button class="rotor-close" onclick="hideRotor()">✕ Close</button>
   <svg class="rotor-svg" width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
     <!-- housing (epitrochoid approximation) -->
     <ellipse cx="200" cy="200" rx="170" ry="130" fill="none" stroke="#1a1a1a" stroke-width="3" opacity="0.15"/>
@@ -416,67 +358,38 @@ input[type=range].vol-slider {
   </svg>
 </div>
 
-<!-- Audio panel tab -->
-<div class="audio-tab" id="audio-tab" onclick="toggleAudio()">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+<!-- Floating engine play button -->
+<button class="engine-btn" id="engine-btn" onclick="togglePlay()" aria-label="Play engine sound">
+  <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="white">
+    <polygon points="5 3 19 12 5 21 5 3"/>
   </svg>
-  ENGINE
-</div>
-
-<div class="audio-panel" id="audio-panel">
-  <div class="ap-header">
-    <span class="ap-title">R26B Sound</span>
-    <button class="ap-close" onclick="toggleAudio()">✕ Cerrar</button>
-  </div>
-  <div class="ap-file-label">engine.mp3</div>
-  <div class="ap-controls">
-    <button class="ap-play" id="play-btn" onclick="togglePlay()" aria-label="Play/Pause">
-      <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="white">
-        <polygon points="5 3 19 12 5 21 5 3"/>
-      </svg>
-    </button>
-    <div class="ap-progress-wrap" id="ap-prog-wrap" onclick="seekAudio(event)">
-      <div class="ap-progress-fill" id="ap-prog"></div>
-    </div>
-    <span class="ap-time" id="ap-time">0:00</span>
-  </div>
-  <div class="ap-volume">
-    <svg class="ap-vol-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-    </svg>
-    <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.8" oninput="setVolume(this.value)">
-  </div>
-  <div class="ap-note">Coloca engine.mp3 en la misma carpeta que este archivo.</div>
-</div>
+  <span id="engine-label">ENGINE</span>
+</button>
 
 <audio id="engine-audio" src="engine.mp3" loop></audio>
 
 <script>
 const slides = [
   { lbl:"PechaKucha · Intro", ttl:"Good\nMorning", bdy:"Welcome to this PechaKucha on one of the most legendary machines in motorsport history.", chips:[], rotor:false },
-  { lbl:"Le Mans · 1991", ttl:"The Fear\nof Le Mans", bdy:"In 1991, this car did the impossible — it won the 24 Hours of Le Mans, the most demanding endurance race in the world.", chips:[{v:"24",l:"Hours",c:""},{v:"1991",l:"Victorioso",c:"g"}], rotor:false },
-  { lbl:"Ingeniería · Rotary", ttl:"The Rotary\nEngine", bdy:"What makes the Mazda 787B so special lives under its bodywork — the legendary rotary engine that no one else dared to race.", chips:[], rotor:true },
-  { lbl:"Historia · 1957", ttl:"Felix\nWankel", bdy:"The rotary engine — the soul of the car. Invented by Felix Wankel and licensed by Mazda, who spent decades perfecting what others abandoned.", chips:[], rotor:true },
-  { lbl:"Mecánica · Rotor", ttl:"The\nRotor", bdy:"A Reuleaux triangle spinning at extreme speed inside an epitrochoidal housing. Three combustion chambers active at all times.", chips:[], rotor:true },
-  { lbl:"Ciclo · 4 Etapas", ttl:"The Four\nStages", bdy:"Intake, Compression, Combustion, Exhaust — all happening simultaneously across three chambers with every single rotation.", chips:[], rotor:false },
-  { lbl:"Potencia · Continua", ttl:"Continuous\nCycle", bdy:"Nonstop power in every lap, every corner. Three chambers fire in rapid sequence delivering perfectly uninterrupted power.", chips:[{v:"3",l:"Cámaras activas",c:""},{v:"0",l:"Interrupciones",c:"g"}], rotor:false },
-  { lbl:"Motor · R26B", ttl:"The R26B\nHeart", bdy:"Four distinct rotors working simultaneously. 2.6 liters of pure rotary engineering producing approximately 700 horsepower.", chips:[{v:"4",l:"Rotores",c:""},{v:"700",l:"Caballos",c:""},{v:"2.6L",l:"Cilindrada",c:"y"}], rotor:true },
-  { lbl:"Diseño · Sin Válvulas", ttl:"No\nValves", bdy:"Less weight, extremely compact. No poppet valves, no valve springs — the rotor itself opens and closes the ports.", chips:[{v:"60%",l:"Menos piezas",c:"g"}], rotor:false },
-  { lbl:"Performance · RPM", ttl:"High\nRPMs", bdy:"Reaching 9,000 RPM in race conditions — a point where most piston engines would self-destruct. Equivalent to 110 decibels.", chips:[{v:"9,000",l:"RPM máx",c:""},{v:"110",l:"Decibeles",c:"y"}], rotor:false },
-  { lbl:"Performance · Entrega", ttl:"Power\nDelivery", bdy:"Perfectly smooth and linear power curve — no torque dips, no hesitation, no drama through every corner.", chips:[], rotor:false },
-  { lbl:"Identidad · Sonido", ttl:"The\nSound", bdy:"An iconic high-pitched scream unlike any other race car. Once heard, it is never forgotten — the rotary's signature to the world.", chips:[], rotor:false },
-  { lbl:"Confiabilidad", ttl:"Reliability\nFactor", bdy:"Fewer moving parts means less to fail. The R26B ran 24 straight hours at maximum load without a single mechanical issue.", chips:[{v:"0",l:"Fallas de motor",c:"g"},{v:"24h",l:"A carga máxima",c:""}], rotor:false },
-  { lbl:"Ingeniería · Combustible", ttl:"Fuel\nInjection", bdy:"Mazda fixed the rotary's notorious fuel thirst. Re-engineered injection mapping made the 787B fully competitive over race distance.", chips:[], rotor:false },
-  { lbl:"Historia · 23 Jun 1991", ttl:"June 23,\n1991", bdy:"Car #55 crosses the finish line at Circuit de la Sarthe with the Charge livery. The perfect example of Japanese engineering at its peak.", chips:[{v:"#55",l:"Número de carro",c:""},{v:"1st",l:"Japonés ganador",c:"y"}], rotor:false },
-  { lbl:"Post-Carrera", ttl:"Engine\nCondition", bdy:"After 24 hours at maximum load, the R26B was inspected and found in perfect condition — zero degradation beyond expectations.", chips:[{v:"✓",l:"Perfecto",c:"g"}], rotor:false },
-  { lbl:"Regulaciones · 1992", ttl:"The\nBan", bdy:"The ACO changed the equivalency formula for rotary engines after 1991, making them uncompetitive. The 787B never returned as a works entry.", chips:[{v:"1",l:"Temporada elegible",c:"y"}], rotor:false },
-  { lbl:"Legado · Invicto", ttl:"Unbeatable\nLegend", bdy:"The only Japanese car with a rotary engine ever to win Le Mans outright. A record that stands to this day and likely always will.", chips:[], rotor:false },
-  { lbl:"Impacto · Historia", ttl:"Breaking\nMonopoly", bdy:"The Mazda 787B shattered the European monopoly at the world's greatest endurance race — proving Japan's place at the very top.", chips:[{v:"1st",l:"Ganador no-europeo",c:""}], rotor:false },
-  { lbl:"PechaKucha · Fin", ttl:"Thank\nYou", bdy:"The 787B proved that passion, engineering, and a spinning triangle can change history. Car #55 · Le Mans 1991 · forever.", chips:[], rotor:false },
+  { lbl:"Le Mans · 1991", ttl:"The Fear\nof Le Mans", bdy:"In 1991, this car did the impossible — it won the 24 Hours of Le Mans, the most demanding endurance race in the world.", chips:[{v:"24",l:"Hours",c:""},{v:"1991",l:"Victory",c:"g"}], rotor:false },
+  { lbl:"Engineering · Rotary", ttl:"The Rotary\nEngine", bdy:"What makes the Mazda 787B so special lives under its bodywork — the legendary rotary engine that no one else dared to race.", chips:[], rotor:true },
+  { lbl:"History · 1957", ttl:"Felix\nWankel", bdy:"The rotary engine — the soul of the car. Invented by Felix Wankel and licensed by Mazda, who spent decades perfecting what others abandoned.", chips:[], rotor:true },
+  { lbl:"Mechanics · Rotor", ttl:"The\nRotor", bdy:"A Reuleaux triangle spinning at extreme speed inside an epitrochoidal housing. Three combustion chambers active at all times.", chips:[], rotor:true },
+  { lbl:"Cycle · 4 Stages", ttl:"The Four\nStages", bdy:"Intake, Compression, Combustion, Exhaust — all happening simultaneously across three chambers with every single rotation.", chips:[], rotor:false },
+  { lbl:"Power · Continuous", ttl:"Continuous\nCycle", bdy:"Nonstop power in every lap, every corner. Three chambers fire in rapid sequence delivering perfectly uninterrupted power.", chips:[{v:"3",l:"Active chambers",c:""},{v:"0",l:"Interruptions",c:"g"}], rotor:false },
+  { lbl:"Engine · R26B", ttl:"The R26B\nHeart", bdy:"Four distinct rotors working simultaneously. 2.6 liters of pure rotary engineering producing approximately 700 horsepower.", chips:[{v:"4",l:"Rotors",c:""},{v:"700",l:"Horsepower",c:""},{v:"2.6L",l:"Displacement",c:"y"}], rotor:true },
+  { lbl:"Design · No Valves", ttl:"No\nValves", bdy:"Less weight, extremely compact. No poppet valves, no valve springs — the rotor itself opens and closes the ports.", chips:[{v:"60%",l:"Fewer parts",c:"g"}], rotor:false },
+  { lbl:"Performance · RPM", ttl:"High\nRPMs", bdy:"Reaching 9,000 RPM in race conditions — a point where most piston engines would self-destruct. Equivalent to 110 decibels.", chips:[{v:"9,000",l:"Max RPM",c:""},{v:"110",l:"Decibels",c:"y"}], rotor:false },
+  { lbl:"Performance · Delivery", ttl:"Power\nDelivery", bdy:"Perfectly smooth and linear power curve — no torque dips, no hesitation, no drama through every corner.", chips:[], rotor:false },
+  { lbl:"Identity · Sound", ttl:"The\nSound", bdy:"An iconic high-pitched scream unlike any other race car. Once heard, it is never forgotten — the rotary's signature to the world.", chips:[], rotor:false },
+  { lbl:"Reliability", ttl:"Reliability\nFactor", bdy:"Fewer moving parts means less to fail. The R26B ran 24 straight hours at maximum load without a single mechanical issue.", chips:[{v:"0",l:"Engine failures",c:"g"},{v:"24h",l:"At full load",c:""}], rotor:false },
+  { lbl:"Engineering · Fuel", ttl:"Fuel\nInjection", bdy:"Mazda fixed the rotary's notorious fuel thirst. Re-engineered injection mapping made the 787B fully competitive over race distance.", chips:[], rotor:false },
+  { lbl:"History · Jun 23, 1991", ttl:"June 23,\n1991", bdy:"Car #55 crosses the finish line at Circuit de la Sarthe with the Charge livery. The perfect example of Japanese engineering at its peak.", chips:[{v:"#55",l:"Car number",c:""},{v:"1st",l:"Japanese winner",c:"y"}], rotor:false },
+  { lbl:"Post-Race", ttl:"Engine\nCondition", bdy:"After 24 hours at maximum load, the R26B was inspected and found in perfect condition — zero degradation beyond expectations.", chips:[{v:"✓",l:"Perfect",c:"g"}], rotor:false },
+  { lbl:"Regulations · 1992", ttl:"The\nBan", bdy:"The ACO changed the equivalency formula for rotary engines after 1991, making them uncompetitive. The 787B never returned as a works entry.", chips:[{v:"1",l:"Season eligible",c:"y"}], rotor:false },
+  { lbl:"Legacy · Unbeaten", ttl:"Unbeatable\nLegend", bdy:"The only Japanese car with a rotary engine ever to win Le Mans outright. A record that stands to this day and likely always will.", chips:[], rotor:false },
+  { lbl:"Impact · History", ttl:"Breaking\nMonopoly", bdy:"The Mazda 787B shattered the European monopoly at the world's greatest endurance race — proving Japan's place at the very top.", chips:[{v:"1st",l:"Non-European winner",c:""}], rotor:false },
+  { lbl:"PechaKucha · End", ttl:"Thank\nYou", bdy:"The 787B proved that passion, engineering, and a spinning triangle can change history. Car #55 · Le Mans 1991 · forever.", chips:[], rotor:false },
 ];
 
 let cur = 0, busy = false;
@@ -518,50 +431,31 @@ function showRotor() { document.getElementById('rotor-wrap').classList.add('visi
 function hideRotor() { document.getElementById('rotor-wrap').classList.remove('visible'); }
 
 // audio
-let audioOpen = false;
-function toggleAudio() {
-  audioOpen = !audioOpen;
-  document.getElementById('audio-panel').classList.toggle('open', audioOpen);
-  document.getElementById('audio-tab').style.display = audioOpen ? 'none' : 'flex';
-}
-
 const audio = document.getElementById('engine-audio');
 let playing = false;
 
 function togglePlay() {
+  const btn = document.getElementById('engine-btn');
   if (playing) {
-    audio.pause(); playing = false;
+    audio.pause();
+    playing = false;
     document.getElementById('play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+    document.getElementById('engine-label').textContent = 'ENGINE';
+    btn.classList.remove('playing');
   } else {
     audio.play().catch(()=>{});
     playing = true;
     document.getElementById('play-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    document.getElementById('engine-label').textContent = 'STOP';
+    btn.classList.add('playing');
   }
 }
 
-function setVolume(v) { audio.volume = parseFloat(v); }
-
-function seekAudio(e) {
-  if (!audio.duration) return;
-  const r = document.getElementById('ap-prog-wrap').getBoundingClientRect();
-  const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
-  audio.currentTime = pct * audio.duration;
-}
-
-function fmtTime(s) {
-  const m = Math.floor(s/60);
-  return m+':'+(Math.floor(s%60)+'').padStart(2,'0');
-}
-
-audio.addEventListener('timeupdate', () => {
-  if (!audio.duration) return;
-  const pct = audio.currentTime / audio.duration * 100;
-  document.getElementById('ap-prog').style.width = pct+'%';
-  document.getElementById('ap-time').textContent = fmtTime(audio.currentTime);
-});
 audio.addEventListener('ended', () => {
   playing = false;
   document.getElementById('play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  document.getElementById('engine-label').textContent = 'ENGINE';
+  document.getElementById('engine-btn').classList.remove('playing');
 });
 
 // keyboard
