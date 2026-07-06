@@ -262,18 +262,20 @@ model-viewer {
 
 <!-- 3D Model -->
 <div class="model-wrap">
-  <model-viewer
-    src="Mazda_787B.glb"
-    auto-rotate
-    auto-rotate-delay="500"
-    rotation-per-second="12deg"
-    camera-controls
-    shadow-intensity="0.5"
-    exposure="1.1"
-    camera-orbit="-20deg 85deg 110%"
-    interaction-prompt="none"
-    style="width:100%;height:100%;background:transparent;">
-  </model-viewer>
+<model-viewer
+  src="Mazda_787B.glb"
+  auto-rotate
+  auto-rotate-delay="0" 
+  rotation-per-second="15deg"
+  camera-controls
+  shadow-intensity="0.5"
+  exposure="1.1"
+  camera-orbit="0deg 75deg 80%"
+  min-camera-orbit="auto 75deg auto"
+  max-camera-orbit="auto 75deg auto"
+  interaction-prompt="none"
+  style="width:100%;height:100%;background:transparent;">
+</model-viewer>
 </div>
 
 <!-- Left text panel -->
