@@ -17,61 +17,266 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:100%; height:100%; overflow:hidden; font-family:'Inter',sans-serif; }
 
-.bg { position:fixed; inset:0; z-index:0; background: var(--white); }
-.bg::before { content:''; position:absolute; top:0; right:0; bottom:0; width:62%; background: var(--orange); clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%); }
-.bg::after { content:''; position:absolute; top:0; left:0; width:50%; height:58%; background: var(--green); clip-path: polygon(35% 0, 100% 0, 55% 100%, 0 100%, 0 0); }
+/* ── BACKGROUND: geometric livery triangles ── */
+.bg {
+  position:fixed; inset:0; z-index:0;
+  background: var(--white);
+}
+/* big orange right triangle */
+.bg::before {
+  content:'';
+  position:absolute;
+  top:0; right:0; bottom:0;
+  width:62%;
+  background: var(--orange);
+  clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
+}
+/* green top-left triangle */
+.bg::after {
+  content:'';
+  position:absolute;
+  top:0; left:0;
+  width:50%; height:58%;
+  background: var(--green);
+  clip-path: polygon(35% 0, 100% 0, 55% 100%, 0 100%, 0 0);
+}
 
-.model-wrap { position:fixed; right: -2%; bottom: -2%; width: 60%; height: 68%; z-index: 5; pointer-events:auto; }
-model-viewer { width:100%; height:100%; --poster-color: transparent; background: transparent; }
+/* ── MODEL VIEWER in bottom-right ── */
+.model-wrap {
+  position:fixed;
+  right: -2%;
+  bottom: -2%;
+  width: 60%;
+  height: 68%;
+  z-index: 5;
+  pointer-events:auto;
+}
+model-viewer {
+  width:100%; height:100%;
+  --poster-color: transparent;
+  background: transparent;
+}
 
-.panel { position:fixed; left:0; top:0; bottom:0; width:320px; z-index:20; display:flex; flex-direction:column; justify-content:center; padding: 60px 36px 120px 44px; }
-.slide-label { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #000; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 6px rgba(255,255,255,0.9); margin-bottom:14px; opacity:0; transform:translateX(-12px); transition: opacity .4s ease, transform .4s ease; }
-.slide-title { font-family:'Bebas Neue',sans-serif; font-size: clamp(52px,5.5vw,80px); line-height:0.92; color: var(--orange); margin-bottom:22px; opacity:0; transform:translateX(-16px); transition: opacity .4s ease .06s, transform .4s ease .06s; }
-.slide-body { font-size:15.5px; line-height:1.68; color: #000; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px rgba(255,255,255,0.9); max-width:260px; opacity:0; transform:translateX(-12px); transition: opacity .4s ease .12s, transform .4s ease .12s; }
-.panel.in .slide-label, .panel.in .slide-title, .panel.in .slide-body { opacity:1; transform:translateX(0); }
+/* ── LEFT TEXT PANEL ── */
+.panel {
+  position:fixed;
+  left:0; top:0; bottom:0;
+  width:320px;
+  z-index:20;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding: 60px 36px 120px 44px;
+}
 
-.chip-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; opacity:0; transform:translateX(-10px); transition: opacity .4s ease .18s, transform .4s ease .18s; }
+.slide-label {
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color: #000;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 6px rgba(255,255,255,0.9);
+  margin-bottom:14px;
+  opacity:0;
+  transform:translateX(-12px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.slide-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: clamp(52px,5.5vw,80px);
+  line-height:0.92;
+  color: var(--orange);
+  margin-bottom:22px;
+  opacity:0;
+  transform:translateX(-16px);
+  transition: opacity .4s ease .06s, transform .4s ease .06s;
+}
+.slide-body {
+  font-size:15.5px;
+  line-height:1.68;
+  color: #000;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px rgba(255,255,255,0.9);
+  max-width:260px;
+  opacity:0;
+  transform:translateX(-12px);
+  transition: opacity .4s ease .12s, transform .4s ease .12s;
+}
+.panel.in .slide-label,
+.panel.in .slide-title,
+.panel.in .slide-body { opacity:1; transform:translateX(0); }
+
+/* stat chips below body */
+.chip-row {
+  display:flex; gap:10px; flex-wrap:wrap;
+  margin-top:22px;
+  opacity:0; transform:translateX(-10px);
+  transition: opacity .4s ease .18s, transform .4s ease .18s;
+}
 .panel.in .chip-row { opacity:1; transform:translateX(0); }
-.chip { background:rgba(255,255,255,0.75); border:1.5px solid rgba(0,0,0,0.10); border-radius:8px; padding:9px 14px; display:flex; flex-direction:column; gap:2px; }
-.chip-val { font-family:'Bebas Neue',sans-serif; font-size:26px; line-height:1; color: var(--orange); }
+.chip {
+  background:rgba(255,255,255,0.75);
+  border:1.5px solid rgba(0,0,0,0.10);
+  border-radius:8px;
+  padding:9px 14px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.chip-val {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:26px; line-height:1;
+  color: var(--orange);
+}
 .chip-val.g { color: var(--green); }
 .chip-val.y { color: #9a7e00; }
 .chip-lbl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#888; font-weight:700; }
 
-.rotor-wrap { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:30; opacity:0; pointer-events:none; transition: opacity .5s ease; }
+/* ── ROTOR ANIMATION OVERLAY ── */
+.rotor-wrap {
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  z-index:30;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .5s ease;
+}
 .rotor-wrap.visible { opacity:1; pointer-events:auto; }
-.rotor-close { position:absolute; top:-36px; right:-4px; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#fff; background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2); padding:4px 12px; border-radius:4px; cursor:pointer; font-family:'Inter',sans-serif; font-weight:700; }
+.rotor-close {
+  position:absolute; top:-36px; right:-4px;
+  font-size:12px; letter-spacing:2px; text-transform:uppercase;
+  color:#fff; background:rgba(0,0,0,0.6);
+  border:1px solid rgba(255,255,255,0.2);
+  padding:4px 12px; border-radius:4px;
+  cursor:pointer; font-family:'Inter',sans-serif; font-weight:700;
+}
+.rotor-svg {
+  filter: drop-shadow(0 0 24px rgba(232,83,10,0.6));
+}
+/* spinning rotor group */
+#rotor-group {
+  transform-origin: 200px 200px;
+  animation: spin 1.4s linear infinite;
+}
+#rotor-group2 {
+  transform-origin: 200px 200px;
+  animation: spin 1.4s linear infinite reverse;
+  animation-delay: -0.3s;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.engine-btn { position:fixed; bottom:80px; right:0; z-index:50; background: var(--green); border: none; border-radius:10px 0 0 10px; color:#fff; padding:12px 18px 12px 16px; display:flex; align-items:center; gap:9px; font-family:'Inter',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; box-shadow:-3px 3px 16px rgba(0,0,0,0.25); transition: transform .2s ease, background .2s; }
+/* ── ENGINE SOUND BUTTON ── */
+.engine-btn {
+  position:fixed;
+  bottom:80px; right:0;
+  z-index:50;
+  background: var(--green);
+  border: none;
+  border-radius:10px 0 0 10px;
+  color:#fff;
+  padding:12px 18px 12px 16px;
+  display:flex; align-items:center; gap:9px;
+  font-family:'Inter',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:-3px 3px 16px rgba(0,0,0,0.25);
+  transition: transform .2s ease, background .2s;
+}
 .engine-btn:hover { transform:translateX(-4px); }
 .engine-btn.playing { background: var(--orange); }
 
-.nav-bar { position:fixed; bottom:0; left:0; right:0; height:64px; z-index:40; display:flex; align-items:center; padding:0 44px; gap:16px; }
-.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color: var(--orange); }
-.nav-progress-wrap { width:140px; height:2px; background:rgba(0,0,0,0.15); border-radius:1px; overflow:visible; position:relative; cursor:pointer; }
-.nav-progress-fill { height:100%; background:var(--orange); border-radius:1px; transition:width .4s cubic-bezier(.4,0,.2,1); }
-.preview-tag { position:absolute; top:-30px; background:var(--black); color:#fff; padding:2px 8px; border-radius:4px; font-size:10px; pointer-events:none; display:none; transform:translateX(-50%); white-space:nowrap; }
-.nav-num { font-size:10px; font-weight:700; letter-spacing:2px; color:#aaa; text-transform:uppercase; }
+/* ── BOTTOM NAV ── */
+.nav-bar {
+  position:fixed; bottom:0; left:0; right:0;
+  height:64px; z-index:40;
+  display:flex; align-items:center;
+  padding:0 44px;
+  gap:16px;
+}
+.nav-logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px; letter-spacing:2px;
+  color: var(--orange);
+}
+.nav-progress-wrap {
+  width:140px; height:2px;
+  background:rgba(0,0,0,0.15); border-radius:1px; overflow:hidden;
+}
+.nav-progress-fill {
+  height:100%; background:var(--orange); border-radius:1px;
+  transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+.nav-num {
+  font-size:10px; font-weight:700; letter-spacing:2px; color:#aaa;
+  text-transform:uppercase;
+}
 .nav-right { margin-left:auto; display:flex; gap:10px; }
-.btn { padding:10px 26px; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:'Inter',sans-serif; transition: all .2s; }
-.btn-prev { background:transparent; border:1.5px solid rgba(0,0,0,0.18); color:#555; }
-.btn-next { background:var(--green); border:1.5px solid var(--green); color:#fff; }
+.btn {
+  padding:10px 26px;
+  border-radius:6px;
+  font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; font-family:'Inter',sans-serif;
+  transition: all .2s;
+}
+.btn-prev {
+  background:transparent;
+  border:1.5px solid rgba(0,0,0,0.18);
+  color:#555;
+}
+.btn-prev:hover { background:rgba(0,0,0,0.06); color:#111; }
+.btn-next {
+  background:var(--green);
+  border:1.5px solid var(--green);
+  color:#fff;
+}
+.btn-next:hover { background:#14551f; }
 
-.rotor-trigger { display:none; margin-top:18px; align-self:flex-start; background:var(--orange); border:none; border-radius:6px; color:#fff; font-family:'Inter',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:10px 20px; cursor:pointer; opacity:0; transition:opacity .4s ease .24s; }
+/* ── ROTOR TRIGGER BUTTON (shows on specific slides) ── */
+.rotor-trigger {
+  display:none;
+  margin-top:18px;
+  align-self:flex-start;
+  background:var(--orange);
+  border:none; border-radius:6px;
+  color:#fff; font-family:'Inter',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase;
+  padding:10px 20px; cursor:pointer;
+  opacity:0; transition:opacity .4s ease .24s;
+}
 .panel.in .rotor-trigger { opacity:1; }
-.livery-line { width:100px; height:4px; border-radius:2px; background: linear-gradient(90deg, var(--orange) 33%, var(--yellow) 33%, var(--yellow) 66%, var(--green) 66%); margin-bottom:18px; opacity:0; transition:opacity .35s ease .02s; }
+
+/* livery accent line */
+.livery-line {
+  width:100px; height:4px; border-radius:2px;
+  background: linear-gradient(90deg, var(--orange) 33%, var(--yellow) 33%, var(--yellow) 66%, var(--green) 66%);
+  margin-bottom:18px;
+  opacity:0; transition:opacity .35s ease .02s;
+}
 .panel.in .livery-line { opacity:1; }
 </style>
 </head>
 <body>
 
+<!-- Geometric livery background -->
 <div class="bg"></div>
 
+<!-- 3D Model -->
 <div class="model-wrap">
-<model-viewer src="Mazda_787B.glb" auto-rotate auto-rotate-delay="0" rotation-per-second="15deg" camera-controls shadow-intensity="0.5" exposure="1.1" camera-orbit="0deg 75deg 70%" interaction-prompt="none" style="width:100%;height:100%;background:transparent;"></model-viewer>
+<model-viewer
+  src="Mazda_787B.glb"
+  auto-rotate
+  auto-rotate-delay="0" 
+  rotation-per-second="15deg"
+  camera-controls
+  shadow-intensity="0.5"
+  exposure="1.1"
+  camera-orbit="0deg 75deg 70%"
+  interaction-prompt="none"
+  style="width:100%;height:100%;background:transparent;">
+</model-viewer>
 </div>
 
+<!-- Left text panel -->
 <div class="panel" id="panel">
   <div class="livery-line"></div>
   <div class="slide-label" id="lbl">PechaKucha · Mazda 787B</div>
@@ -81,11 +286,11 @@ model-viewer { width:100%; height:100%; --poster-color: transparent; background:
   <button class="rotor-trigger" id="rotor-btn" onclick="showRotor()">▶ View Rotor</button>
 </div>
 
+<!-- Bottom nav -->
 <div class="nav-bar">
   <span class="nav-logo">#55 · Charge</span>
-  <div class="nav-progress-wrap" id="progress-container" onmousemove="showPreview(event)" onmouseleave="hidePreview()" onclick="seekSlide(event)">
+  <div class="nav-progress-wrap">
     <div class="nav-progress-fill" id="npf" style="width:5%"></div>
-    <div id="preview-tag" class="preview-tag"></div>
   </div>
   <span class="nav-num" id="nnum">01 / 20</span>
   <div class="nav-right">
@@ -94,13 +299,18 @@ model-viewer { width:100%; height:100%; --poster-color: transparent; background:
   </div>
 </div>
 
+<!-- Rotor animation overlay -->
 <div class="rotor-wrap" id="rotor-wrap">
   <button class="rotor-close" onclick="hideRotor()">✕ Close</button>
   <img src="rotor.gif" alt="Wankel Rotary Engine" style="width:400px;height:400px;object-fit:contain;border-radius:12px;">
+  <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:8px;">R26B · Wankel Rotary</div>
 </div>
 
+<!-- Floating engine play button -->
 <button class="engine-btn" id="engine-btn" onclick="togglePlay()" aria-label="Play engine sound">
-  <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+  <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="white">
+    <polygon points="5 3 19 12 5 21 5 3"/>
+  </svg>
   <span id="engine-label">ENGINE</span>
 </button>
 
@@ -126,4 +336,88 @@ const slides = [
   { lbl:"Post-Race", ttl:"Engine\nCondition", bdy:"After 24 hours at maximum load, the R26B was inspected and found in perfect condition — zero degradation beyond expectations.", chips:[{v:"✓",l:"Perfect",c:"g"}], rotor:false },
   { lbl:"Regulations · 1992", ttl:"The\nBan", bdy:"The ACO changed the equivalency formula for rotary engines after 1991, making them uncompetitive. The 787B never returned as a works entry.", chips:[{v:"1",l:"Season eligible",c:"y"}], rotor:false },
   { lbl:"Legacy · Unbeaten", ttl:"Unbeatable\nLegend", bdy:"The only Japanese car with a rotary engine ever to win Le Mans outright. A record that stands to this day and likely always will.", chips:[], rotor:false },
-  { lbl:"Impact · History", ttl:"Breaking\nMonopoly", bdy:"The
+  { lbl:"Impact · History", ttl:"Breaking\nMonopoly", bdy:"The Mazda 787B shattered the European monopoly at the world's greatest endurance race — proving Japan's place at the very top.", chips:[{v:"1st",l:"Non-European winner",c:""}], rotor:false },
+  { lbl:"PechaKucha · End", ttl:"Thank\nYou", bdy:"The 787B proved that passion, engineering, and a spinning triangle can change history.", chips:[], rotor:false },
+];
+
+let cur = 0, busy = false;
+const panel = document.getElementById('panel');
+
+function render() {
+  const s = slides[cur];
+  document.getElementById('lbl').textContent = s.lbl;
+  document.getElementById('ttl').innerHTML = s.ttl.replace('\n','<br>');
+  document.getElementById('bdy').textContent = s.bdy;
+
+  const cr = document.getElementById('chips');
+  cr.innerHTML = '';
+  (s.chips||[]).forEach(c => {
+    cr.innerHTML += `<div class="chip"><div class="chip-val ${c.c}">${c.v}</div><div class="chip-lbl">${c.l}</div></div>`;
+  });
+
+  const rb = document.getElementById('rotor-btn');
+  rb.style.display = s.rotor ? 'block' : 'none';
+
+  const total = slides.length;
+  document.getElementById('npf').style.width = Math.round(((cur+1)/total)*100)+'%';
+  document.getElementById('nnum').textContent = String(cur+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+}
+
+function go(dir) {
+  if (busy) return;
+  busy = true;
+  panel.classList.remove('in');
+  setTimeout(() => {
+    cur = (cur + dir + slides.length) % slides.length;
+    render();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ panel.classList.add('in'); busy=false; }));
+  }, 220);
+}
+
+// rotor overlay
+function showRotor() { document.getElementById('rotor-wrap').classList.add('visible'); }
+function hideRotor() { document.getElementById('rotor-wrap').classList.remove('visible'); }
+
+// audio
+const audio = document.getElementById('engine-audio');
+let playing = false;
+
+function togglePlay() {
+  const btn = document.getElementById('engine-btn');
+  if (playing) {
+    audio.pause();
+    playing = false;
+    document.getElementById('play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+    document.getElementById('engine-label').textContent = 'ENGINE';
+    btn.classList.remove('playing');
+  } else {
+    audio.play().catch(()=>{});
+    playing = true;
+    document.getElementById('play-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    document.getElementById('engine-label').textContent = 'STOP';
+    btn.classList.add('playing');
+  }
+}
+
+audio.addEventListener('ended', () => {
+  playing = false;
+  document.getElementById('play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  document.getElementById('engine-label').textContent = 'ENGINE';
+  document.getElementById('engine-btn').classList.remove('playing');
+});
+
+// keyboard
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  if (e.key === 'Escape') hideRotor();
+});
+
+// init
+audio.volume = 0.8;
+render();
+requestAnimationFrame(()=>requestAnimationFrame(()=>panel.classList.add('in')));
+</script>
+</body>
+</html>
